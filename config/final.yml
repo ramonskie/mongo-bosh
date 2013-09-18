@@ -1,0 +1,7 @@
+---
+final_name: mongo-cluster
+min_cli_version: 1.5.0.pre.1004
+blobstore:
+  provider: s3
+  options:
+    bucket_name: altoros-bosh-blobs

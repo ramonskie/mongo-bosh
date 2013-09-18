@@ -1,0 +1,12 @@
+---
+name: mongodb
+templates:
+  mongodb_ctl.erb: bin/mongodb_ctl
+  mongodb.conf.erb: etc/mongodb.conf
+packages:
+  - common
+  - mongodb24
+properties:
+  replication_set:
+    default: rp0
+    description:
