@@ -1,0 +1,84 @@
+--
+name: mongodb
+director_uuid: <your directory uuid> #use bosh status for obtain it
+
+releases:
+ - name: cf
+   version: latest
+ - name: mongo
+   version: latest
+
+# Some configuration
+update:
+  canaries: 1
+  canary_watch_time: 30000-600000
+  update_watch_time: 30000-600000
+  max_in_flight: 4
+  max_errors: 1
+
+# Network configuration
+networks:
+- name: floating
+  type: vip
+  cloud_properties: {}
+- name: default
+  type: dynamic
+  cloud_properties:
+    security_groups:
+    - default
+    - cf
+
+# Pull for your databases and infrastructure nodes
+resource_pools:
+  - name: dea
+    network: default
+    size: 1
+    stemcell:
+      name: bosh-stemcell
+      version: latest
+    cloud_properties:
+      instance_type: ef1.small
+
+  - name: mongodb
+    network: default
+    size: 3
+    stemcell:
+      name: bosh-stemcell
+      version: latest
+    cloud_properties:
+      instance_type: m1.medium
+
+jobs:
+  # Some infrastructure jobs
+  - name: core
+    template:
+      - syslog_aggregator
+      - nats
+    release: cf
+    instances: 1
+    resource_pool: infrastructure
+    persistent_disk: 8192
+    networks:
+    - name: default
+      default:
+      - dns
+      - gateway
+
+  # This job is your MongoDB nodes
+  - name: mongo
+    release: mongo
+    template: mongodb
+    instances: 3
+    resource_pool: infrastructure
+    persistent_disk: 65536 # Disk size for database (in megabytes)
+    networks:
+    - name: default
+      default: [dns, gateway]
+
+properties:
+  nats:
+    address: 0.core.default.cf.microbosh
+    port: 4222
+    user: nats
+    password: <password for you message system>
+    authorization_timeout: 5
