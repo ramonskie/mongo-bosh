@@ -1,0 +1,52 @@
+#!/bin/bash
+
+export PATH=/var/vcap/packages/ruby/bin:$PATH
+
+PACKAGE_DIR=/var/vcap/packages/mongodb_controller
+JOB_DIR=/var/vcap/jobs/mongodb
+
+DATA_DIR=$STORE_DIR/mongodb
+
+RUN_DIR=/var/vcap/sys/run/mongodb
+LOG_DIR=/var/vcap/sys/log/mongodb
+
+export PIDFILE=$RUN_DIR/mongodb_controller.pid
+export CONFIG_FILE=$JOB_DIR/etc/mongodb_controller.yml
+
+LD_LIBRARY_PATH=$PACKAGE_DIR/lib:$LD_LIBRARY_PATH
+
+export LANG=en_US.UTF-8
+
+source /var/vcap/packages/common/utils.sh
+
+case $1 in
+
+  start)
+    pid_guard $PIDFILE "MongoDB Controller"
+
+    mkdir -p $RUN_DIR
+    chown vcap:vcap $RUN_DIR
+
+    echo $$ > $PIDFILE
+    chown vcap:vcap $PIDFILE
+
+    if [ ! -d $LOG_DIR ]; then
+      mkdir -p $LOG_DIR
+      chown vcap:vcap $LOG_DIR
+    fi
+
+    exec chpst -u vcap:vcap $PACKAGE_DIR/mongodb_controller/bin/mongodb_controller \
+        -c $CONFIG_FILE \
+        >>$LOG_DIR/mongodb_controller_ng.stdout.log \
+        2>>$LOG_DIR/mongodb_controller_ng.stderr.log
+    ;;
+
+  stop)
+    kill_and_wait $PIDFILE
+    ;;
+
+  *)
+    echo "Usage: mongodb_controller_ng_ctl {start|stop}"
+    ;;
+
+esac

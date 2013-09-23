@@ -1,5 +1,11 @@
-check process postgres
+check process mongodb
   with pidfile /var/vcap/sys/run/mongodb/mongodb.pid
   start program "/var/vcap/jobs/mongodb/bin/mongodb_ctl start"
   stop program "/var/vcap/jobs/mongodb/bin/mongodb_ctl stop"
+  group vcap
+
+check process mongodb_controller
+  with pidfile /var/vcap/sys/run/mongodb/mongodb_controller.pid
+  start program "/var/vcap/jobs/mongodb/bin/mongodb_controller_ctl start"
+  stop program "/var/vcap/jobs/mongodb/bin/mongodb_controller_ctl stop"
   group vcap

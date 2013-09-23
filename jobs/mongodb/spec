@@ -3,10 +3,23 @@ name: mongodb
 templates:
   mongodb_ctl.erb: bin/mongodb_ctl
   mongodb.conf.erb: etc/mongodb.conf
+  mongodb_controller_ctl.erb: bin/mongodb_controller_ctl
+  mongodb_controller.yml.erb: etc/mongodb_controller.yml
 packages:
   - common
   - mongodb24
+  - mongodb_controller
+  - ruby
 properties:
   replication_set:
-    default: rp0
+    default: rs0
     description:
+
+  nats.user:
+    description: "Username for cc client to connect to NATS"
+  nats.password:
+    description: "Password for cc client to connect to NATS"
+  nats.address:
+    description: "IP address of Cloud Foundry NATS server"
+  nats.port:
+    description: "IP port of Cloud Foundry NATS server"

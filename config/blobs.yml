@@ -3,3 +3,19 @@ mongodb/mongodb-linux-x86_64-2.4.6.tgz:
   object_id: 2b04d4f9-3cd8-4554-ad1d-06c1e10760ef
   sha: 428c67a23d7775d7972fd45509671f8662e014a3
   size: 94940554
+ruby/ruby-1.9.3-p448.tar.gz:
+  object_id: e11118b1-1f20-45aa-8cc6-361196cf3497
+  sha: c7f736e3bc1ca1e6619a9121837dd0840aad77ce
+  size: 12559260
+ruby/rubygems-1.8.24.tgz:
+  object_id: 593e6db8-d0be-4532-811b-d1c0eae86236
+  sha: 30f27047e74f7943117736a0d3e224994fee0905
+  size: 380101
+ruby/bundler-1.2.1.gem:
+  object_id: 86a0c7e3-0c4b-49af-a4ad-847bb561a9b5
+  sha: 0cbe6ad7a41f064d6c11c1058465fffb1bd58069
+  size: 226816
+libyaml/yaml-0.1.4.tgz:
+  object_id: 0ae87cb7-2f39-493a-be1d-a4ccc07296f9
+  sha: e0e5e09192ab10a607e3da2970db492118f560f2
+  size: 471759
