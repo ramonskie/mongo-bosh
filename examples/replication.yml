@@ -1,4 +1,4 @@
---
+---
 name: mongodb
 director_uuid: <your directory uuid> #use bosh status for obtain it
 
