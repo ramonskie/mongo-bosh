@@ -3,12 +3,17 @@ name: mongodb
 director_uuid: <your directory uuid> #use bosh status for obtain it
 
 releases:
- - name: cf
-   version: latest
- - name: mongo
+ - name: mongo-cluster
    version: latest
 
-# Some configuration
+# BOSH configuration
+compilation:
+  workers: 2
+  network: default
+  reuse_compilation_vms: true
+  cloud_properties:
+    instance_type: m1.small
+
 update:
   canaries: 1
   canary_watch_time: 30000-600000
@@ -16,7 +21,7 @@ update:
   max_in_flight: 4
   max_errors: 1
 
-# Network configuration
+# Network configuration (the same as in CF)
 networks:
 - name: floating
   type: vip
@@ -24,20 +29,18 @@ networks:
 - name: default
   type: dynamic
   cloud_properties:
-    security_groups:
-    - default
-    - cf
+    security_groups: ['default']
 
 # Pull for your databases and infrastructure nodes
 resource_pools:
-  - name: dea
+  - name: infrastructure
     network: default
     size: 1
     stemcell:
       name: bosh-stemcell
       version: latest
     cloud_properties:
-      instance_type: ef1.small
+      instance_type: m1.small
 
   - name: mongodb
     network: default
@@ -52,9 +55,8 @@ jobs:
   # Some infrastructure jobs
   - name: core
     template:
-      - syslog_aggregator
       - nats
-    release: cf
+    release: mongo-cluster
     instances: 1
     resource_pool: infrastructure
     persistent_disk: 8192
@@ -66,10 +68,10 @@ jobs:
 
   # This job is your MongoDB nodes
   - name: mongo
-    release: mongo
+    release: mongo-cluster
     template: mongodb
     instances: 3
-    resource_pool: infrastructure
+    resource_pool: mongodb
     persistent_disk: 65536 # Disk size for database (in megabytes)
     networks:
     - name: default
@@ -82,3 +84,5 @@ properties:
     user: nats
     password: <password for you message system>
     authorization_timeout: 5
+  networks:
+    apps: default
