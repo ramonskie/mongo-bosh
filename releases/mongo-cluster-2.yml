@@ -1,0 +1,48 @@
+---
+packages:
+- name: common
+  version: 1
+  sha1: c1b9bbcc4aa89ce14d13cfc80e798b1f97ef5e8b
+  fingerprint: 47eac3c416f87eb0a648b3dfe45632c654d6e67f
+  dependencies: []
+- name: ruby
+  version: 1
+  sha1: c1ec53389bed38bf23d0ad308ea6b923c9f86de4
+  fingerprint: b9ac1ef4be73ff135cf74484f630f4a4b6377304
+  dependencies:
+  - libyaml
+- name: nats
+  version: 1
+  sha1: ee6406a8aee8a4aa4f0efce2ec11da97f7d070a9
+  fingerprint: 87eee0d90d1c22eebd7e0a00cafd7b115e69255e
+  dependencies:
+  - ruby
+- name: libyaml
+  version: 1
+  sha1: 52b2ac231227ec74c57b0d81df85adb01ad96d8f
+  fingerprint: 8706f613556f1aebee7294956626d7061fb2fa5d
+  dependencies: []
+- name: mongodb_controller
+  version: 1
+  sha1: 2369ed4ee632c59b4cc6a86cc8c078ae17ebcba2
+  fingerprint: c7e6a48b38a337ee784939ef6a4ed4ff86842202
+  dependencies:
+  - ruby
+- name: mongodb24
+  version: 1
+  sha1: 7af69587fd4f01249b4503d4e2eb3e17f318fe21
+  fingerprint: 34eb808e6635f40b0a6dd7ac3e7162372efc9437
+  dependencies: []
+jobs:
+- name: nats
+  version: 1
+  fingerprint: 62b03c0ff4b6a3ae9596325a38c283c0c4e7e0d9
+  sha1: 2e899e29a402db156c1e351d0279639678722984
+- name: mongodb
+  version: 1
+  fingerprint: 24ddea5e47ca7d259a2819a3c3245b6e7f53f973
+  sha1: a846cfb1fd1a4d2f7eb2a2c2290de50aa5b60b22
+commit_hash: 1dd1787f
+uncommitted_changes: true
+name: mongo-cluster
+version: 2

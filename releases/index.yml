@@ -2,3 +2,5 @@
 builds:
   cf8b2169af84a40bf905d174e8b69142aa5fd1fd:
     version: 1
+  d1ddc27dcfdc1b821df11a2212162be672a2ea6a:
+    version: 2
