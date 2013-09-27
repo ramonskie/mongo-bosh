@@ -79,7 +79,7 @@ jobs:
 
 properties:
   nats:
-    address: 0.core.default.cf.microbosh
+    address: 0.core.default.mongodb.microbosh
     port: 4222
     user: nats
     password: <password for you message system>

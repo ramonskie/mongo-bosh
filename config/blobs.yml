@@ -19,3 +19,31 @@ libyaml/yaml-0.1.4.tgz:
   object_id: 0ae87cb7-2f39-493a-be1d-a4ccc07296f9
   sha: e0e5e09192ab10a607e3da2970db492118f560f2
   size: 471759
+nats/vendor/cache/eventmachine-0.12.11.cloudfoundry.3.gem:
+  object_id: 41fb6cc6-9a8b-4eb7-a97f-e472bba2214d
+  sha: 7622ad909692f791ce6fce7f867f45194a1b4856
+  size: 221696
+nats/vendor/cache/json_pure-1.6.5.gem:
+  object_id: e4059e04-8069-4cbd-8e69-ce1d1bf9004d
+  sha: 739c40b6acebe9b7b3fdcaf3ff6bd4600ce3dcfb
+  size: 424960
+nats/vendor/cache/daemons-1.1.6.gem:
+  object_id: 700d6767-985c-46c5-951b-28de703e413f
+  sha: 5861f9ddae2a9ecc63b997e16fe69249b6694dc4
+  size: 33792
+nats/vendor/cache/yajl-ruby-0.7.8.gem:
+  object_id: cfd91358-4767-4d66-bc1d-9491d4f673ad
+  sha: d9a29e4321fd26dfa15cc17befccdb9442e42310
+  size: 555008
+nats/vendor/cache/nats-0.4.22.beta.8.gem:
+  object_id: 3675dcdd-e477-4fdf-90a7-c76f5c16bb44
+  sha: 2adef4b6685c2a1b91fb62fc16fa7e1ec7b5205b
+  size: 24576
+nats/vendor/cache/thin-1.3.1.gem:
+  object_id: 26a16295-3ece-476f-a5c1-40e87c5c3526
+  sha: e009f5ce3ba092299cd0810652e67c080ffaef14
+  size: 141824
+nats/vendor/cache/rack-1.4.1.gem:
+  object_id: 768df481-1713-435f-b3e1-0584e219daa4
+  sha: 6a4c6c954d7fa87064b84afad720434402b6d257
+  size: 167936
