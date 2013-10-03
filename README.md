@@ -29,18 +29,15 @@ use this method you don't need to install CloudFoundry, you just need
 small part of CloudFoundry (message bus).
 
 2. Create manifest for your MongoDB cluster. You can find example in
-`examples` subdirectory.
+   `examples` subdirectory.
 
-3. Compile this release. You can do this using `bosh create release
---force`
+3. Upload release to BOSH. You can do this using `bosh upload release releases/<last-release-number>`
 
-4. Upload release to BOSH. You can do this using `bosh upload release`
+4. Deploy cluser using manifest:
+    1. `bosh deployment <your deployment file>` - selects deployment file to upload
+    2. `bosh deploy` - applies deployment manifest to cluster.
 
-5. Deploy cluser using manifest:
-   a. `bosh deployment <your deployment file>` - selects deployment
-   file to upload
-   b. `bosh deploy` - applies deployment manifest to cluster.
-6. When it finish installation, you can check nodes addresses using
+5. When it finish installation, you can check nodes addresses using
 `bosh vms`
 
 ## Roadmap
