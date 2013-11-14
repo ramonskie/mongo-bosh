@@ -1,54 +1,63 @@
-require 'socket'
-require 'uri'
 require_relative 'mongodb_driver'
 
 module VCAP::MongodbController
   module MongoClusterBuilder
+    ADVERTIZE_CHANNEL = "mongodb.advertise".freeze
     class << self
       attr_reader :config, :message_bus
 
-      def configure(config, message_bus)
+      def configure(config, message_bus, driver = MongodbDriver.new(config))
         @config = config
         @message_bus = message_bus
-        @mongodb_driver = MongodbDriver.new(config)
+        @mongodb_driver = driver
       end
 
       def run
-        if main_node?
-          message_bus.subscribe("mongodb.advertise") do |msg, reply|
-            process_advertise_message(msg, reply)
-          end
+        if master_node?
+          attach_as_master
         else
-          send_current_state
-        end
-      end
-
-      def process_advertise_message(msg, reply)
-        unless repl_set_status
-          @mongo_driver.init_replication
-        end
-
-        if(@mongo_driver.replication_set.master?)
-          puts "Adding member to cluster: #{msg.inspect}"
-          @mongo_driver.replication_set.add_member(msg["ip"])
+          advertise_slave
         end
       rescue
         puts $!, $!.backtrace
       end
 
       private
-      def send_current_state
-        @mongo_session = ::Mongo::MongoClient.new('127.0.0.1', 27017)
-
-        state = repl_set_status
-        unless state
-          message_bus.publish("mongodb.advertise", ip: local_ip)
-        end
+      def master_node?
+        config.master_node?
       end
 
-      def local_ip
-        target = URI(config[:message_bus_uri]).host
-        @local_ip ||= UDPSocket.open {|s| s.connect(target, 1); s.addr.last}
+      def advertise_slave
+        message_bus.request(ADVERTIZE_CHANNEL, @mongodb_driver.node_config) do |r|
+          response = VCAP.symbolize_keys(r)
+          case response[:command]
+          when "update_config" then apply_config(response[:data])
+          end
+        end
+      end
+      def attach_as_master
+        message_bus.subscribe(ADVERTIZE_CHANNEL) do |msg, reply|
+          process_advertise_message(msg, reply)
+        end
+
+        @mongodb_driver.start
+      end
+
+      def process_advertise_message(msg, reply)
+        data = {
+          replication_set: @mongodb_driver.node_config[:replication_set] || 'rs0',
+          configured?: true
+        }
+        @mongodb_driver.register_member(msg["ip"], msg["port"])
+        NATS.publish(reply, {command: "update_config", data: data}.to_json)
+      end
+
+      def configured?
+        not config.node_config.empty?
+      end
+
+      def apply_config(config)
+        @mongodb_driver.apply_config(config)
       end
     end
   end

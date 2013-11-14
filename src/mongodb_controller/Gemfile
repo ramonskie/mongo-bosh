@@ -1,35 +1,32 @@
 source 'https://rubygems.org'
 
-gem "activesupport", "~> 4.0"
-gem "rake"
-gem "bcrypt-ruby"
-gem "eventmachine", "~> 1.0.0"
-gem "rfc822"
-gem "steno"
-gem "vcap-concurrency", :git => "https://github.com/cloudfoundry/vcap-concurrency.git", :ref => "2a5b0179"
-gem "cf-message-bus", :git => "https://github.com/cloudfoundry/cf-message-bus.git"
-gem "vcap_common", :git => "https://github.com/cloudfoundry/vcap-common.git"
+gem 'activesupport', '~> 4.0'
+gem 'rake'
+gem 'bcrypt-ruby'
+gem 'eventmachine', '~> 1.0.0'
+gem 'rfc822'
+gem 'steno'
+gem 'vcap-concurrency', git: 'https://github.com/cloudfoundry/vcap-concurrency.git', :ref => '2a5b0179'
+gem 'cf-message-bus', git: 'https://github.com/cloudfoundry/cf-message-bus.git'
+gem 'vcap_common', git: 'https://github.com/cloudfoundry/vcap-common.git'
 
 # These are outside the test group in order to run rake tasks
-gem "rspec"
-gem "ci_reporter"
+gem 'rspec'
+gem 'ci_reporter'
 gem 'mongo'
 gem 'bson_ext'
+gem 'em-mongo'
 
 
 group :development do
-  gem "debugger"
-  gem "pry"
+  gem 'debugger'
+  gem 'pry'
 end
 
 group :test do
-  gem "simplecov"
-  gem "simplecov-rcov"
-  gem "machinist", "~> 1.0.6"
-  gem "webmock"
-  gem "guard-rspec"
-  gem "timecop"
-  gem "rack-test"
-  gem "parallel_tests"
-  gem "fakefs", :require => "fakefs/safe"
+  gem 'simplecov'
+  gem 'guard-rspec'
+  gem 'guard-bundler'
+  gem 'sys-proctable'
+  gem 'mongo'
 end
