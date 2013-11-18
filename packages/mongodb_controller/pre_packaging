@@ -1,8 +1,4 @@
-# abort script on any command that exit with a non zero value
-set -e
+set -e -x
 
-cd ${BUILD_DIR}
-
-pkg_utils/vendor.sh mongodb_controller
-
-rm -rf pkg_utils
+cd ${BUILD_DIR}/mongodb_controller
+bundle package --all

@@ -1,3 +1,12 @@
 ---
-pid_filename: /var/vcap/sys/run/mongodb/mongodb_controller.pid
 message_bus_uri: nats://<%= p("nats.user") %>:<%= p("nats.password") %>@<%= p("nats.address") %>:<%= p("nats.port") %>
+pid_filename: /var/vcap/sys/run/mongodb/mongodb_controller.pid
+
+master_node: <%= spec.index.to_i == 0 %>
+
+node_config_file: /var/vcap/store/mongodb-conf/mongodb_node.yml
+
+mongod_config_file: /var/vcap/store/mongodb-conf/mongodb.conf
+mongod_binary: /var/vcap/packages/mongodb24/bin/mongod
+mongod_port: 27017
+mongod_data_dir: /var/vcap/store/mongodb/

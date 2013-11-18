@@ -5,5 +5,3 @@ dependencies:
 files:
 - mongodb_controller/{Rakefile,Gemfile,Gemfile.lock}
 - mongodb_controller/{db,lib,bin,app}/**/*
-#- mongodb_controller/config/initializers/**/*
-- pkg_utils/*

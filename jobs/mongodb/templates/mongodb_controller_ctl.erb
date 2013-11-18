@@ -4,9 +4,10 @@ export PATH=/var/vcap/packages/ruby/bin:$PATH
 
 PACKAGE_DIR=/var/vcap/packages/mongodb_controller
 JOB_DIR=/var/vcap/jobs/mongodb
+STORE_DIR=/var/vcap/store
 
 DATA_DIR=$STORE_DIR/mongodb
-
+CONF_DIR=$STORE_DIR/mongodb-conf
 RUN_DIR=/var/vcap/sys/run/mongodb
 LOG_DIR=/var/vcap/sys/log/mongodb
 
@@ -27,12 +28,27 @@ case $1 in
     mkdir -p $RUN_DIR
     chown vcap:vcap $RUN_DIR
 
+    if [ ! -d $STORE_DIR ]; then
+      echo "ERROR: storage directory doesn't exist"
+      echo "Please add persistent disk to this job"
+      exit 1
+    fi
+
     echo $$ > $PIDFILE
     chown vcap:vcap $PIDFILE
 
     if [ ! -d $LOG_DIR ]; then
       mkdir -p $LOG_DIR
       chown vcap:vcap $LOG_DIR
+    fi
+    if [ ! -d $DATA_DIR ]; then
+      mkdir -p $DATA_DIR
+      chown vcap:vcap $DATA_DIR
+    fi
+
+    if [ ! -d $CONF_DIR ]; then
+      mkdir -p $CONF_DIR
+      chown vcap:vcap $CONF_DIR
     fi
 
     exec chpst -u vcap:vcap $PACKAGE_DIR/mongodb_controller/bin/mongodb_controller \

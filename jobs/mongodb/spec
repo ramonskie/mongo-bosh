@@ -1,8 +1,6 @@
 ---
 name: mongodb
 templates:
-  mongodb_ctl.erb: bin/mongodb_ctl
-  mongodb.conf.erb: etc/mongodb.conf
   mongodb_controller_ctl.erb: bin/mongodb_controller_ctl
   mongodb_controller.yml.erb: etc/mongodb_controller.yml
 packages:
