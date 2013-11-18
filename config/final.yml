@@ -5,4 +5,4 @@ blobstore:
   provider: s3
   options:
     bucket_name: altoros-bosh-blobs
-    endpoint: https://s3-us-west-1.amazonaws.com
+    endpoint: https://s3.amazonaws.com
