@@ -31,7 +31,7 @@ module VCAP::MongodbController
         message_bus.request(ADVERTIZE_CHANNEL, @mongodb_driver.node_config) do |r|
           response = VCAP.symbolize_keys(r)
           case response[:command]
-          when "update_config" then apply_config(response[:data])
+          when "update_config" then @mongodb_driver.apply_config(response[:data])
           end
         end
       end
@@ -50,14 +50,6 @@ module VCAP::MongodbController
         }
         @mongodb_driver.register_member(msg["ip"], msg["port"])
         NATS.publish(reply, {command: "update_config", data: data}.to_json)
-      end
-
-      def configured?
-        not config.node_config.empty?
-      end
-
-      def apply_config(config)
-        @mongodb_driver.apply_config(config)
       end
     end
   end

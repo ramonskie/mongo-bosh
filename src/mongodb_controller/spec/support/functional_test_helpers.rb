@@ -148,3 +148,4 @@ module FunctionalTestHelper
 end
 
 RSpec.configure { |c| c.include FunctionalTestHelper }
+ENV["TEST_MODE"] = "true"

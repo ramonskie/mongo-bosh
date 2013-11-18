@@ -102,7 +102,7 @@ END_CONFIG
     end
 
     def test_mode?
-      true
+      !!ENV['TEST_MODE']
     end
 
     def local_ip

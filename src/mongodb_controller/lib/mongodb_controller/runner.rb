@@ -89,7 +89,6 @@ module VCAP::MongodbController
       logger.info("Unregistering routes.")
 
       registrar.shutdown do
-        stop_thin_server
         EM.stop
       end
     end
