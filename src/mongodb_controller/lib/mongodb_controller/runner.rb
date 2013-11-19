@@ -15,7 +15,7 @@ module VCAP::MongodbController
       parse_options!
       parse_config
 
-      @log_counter = Steno::Sink::Counter.new
+      setup_logging
     end
 
     def logger
@@ -58,7 +58,6 @@ module VCAP::MongodbController
     def setup_logging
       steno_config = Steno::Config.to_config_hash(@config[:logging])
       steno_config[:context] = Steno::Context::ThreadLocal.new
-      steno_config[:sinks] << @log_counter
       Steno.init(Steno::Config.new(steno_config))
     end
 
@@ -68,11 +67,12 @@ module VCAP::MongodbController
 
     def run!
       EM.run do
-        config = @config.dup
+        config = @config
         message_bus = MessageBusConfigurer::Configurer.new(uri: config[:message_bus_uri],
                                                            logger: logger).go
-        start_mongodb_controller(message_bus)
-        VCAP::MongodbController::MongoClusterBuilder.run
+
+        VCAP::MongodbController::MongoClusterBuilder.configure(@config, message_bus)
+        start_mongodb_controller
       end
     end
 
@@ -86,8 +86,6 @@ module VCAP::MongodbController
     end
 
     def stop!
-      logger.info("Unregistering routes.")
-
       registrar.shutdown do
         EM.stop
       end
@@ -96,12 +94,10 @@ module VCAP::MongodbController
 
     private
 
-    def start_mongodb_controller(message_bus)
+    def start_mongodb_controller
       create_pidfile
 
-      setup_logging
-
-      VCAP::MongodbController::Config.configure(@config, message_bus)
+      VCAP::MongodbController::MongoClusterBuilder.run
     end
   end
 end

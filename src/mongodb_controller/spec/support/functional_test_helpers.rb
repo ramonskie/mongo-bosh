@@ -98,7 +98,8 @@ module FunctionalTestHelper
         mongod_config_file: mongod_config_file,
         mongod_port: port,
         mongod_binary: mongod_path,
-        mongod_data_dir: mongod_data_dir
+        mongod_data_dir: mongod_data_dir,
+        logging: {level: "debug"}
       }
       cleanup
       FileUtils.mkdir_p mongod_data_dir

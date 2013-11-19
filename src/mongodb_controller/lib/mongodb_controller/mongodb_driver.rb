@@ -12,12 +12,16 @@ module VCAP::MongodbController
       @state = :stopped
     end
 
+    def logger
+      @logger ||= Steno.logger("mc.driver")
+    end
+
     def start
       unless node_config[:configured?]
         apply_config(master: true, configured?: true) if @global_config.master_node?
       end
       if !node_config[:configured?]
-        puts "Postponing startup for slave node"
+        logger.debug "Postponing startup while not configured"
       else
         start_mongo
       end
@@ -39,7 +43,7 @@ module VCAP::MongodbController
       @connection.callback { process_commands }
       run_on_mongo { mongo_apply_config }
     rescue
-      p $!, $!.backtrace
+      logger.log_exception $!
     end
 
     def apply_config(node_config)
@@ -60,7 +64,7 @@ module VCAP::MongodbController
             @commands.shift.call
           end
         rescue
-          puts $!, $!.backtrace
+          logger.log_exception $!
         end
         process_commands
       end
@@ -129,7 +133,7 @@ END_CONFIG
     def mongo_apply_config
       if @node_config[:master]
         replication_set.callback do |s|
-          puts [:config, s]
+          logger.info "Applying master config", s
           unless s
             init_replication
           end
@@ -163,7 +167,8 @@ END_CONFIG
     def init_replication
       config = {_id: node_config[:replication_set] || "rs0",
         members: [{_id: 1, host: "#{local_ip}:#{@global_config[:mongod_port]}"}]}
-      @connection.db(:admin).command(replSetInitiate: config).errback{|e| p e}
+      @connection.db(:admin).command(replSetInitiate: config).
+        errback{|e| logger.error("Error initializing replication", e)}
     end
 
     def replication_set_status
@@ -179,9 +184,11 @@ END_CONFIG
             set['members'] << { _id: max_version + 1, host: host }
             set['version'] += 1
 
-            @connection.db(:admin).command(replSetReconfig: set).callback{|d| p [:ok, d]}.errback{|e| p e}
+            @connection.db(:admin).command(replSetReconfig: set).
+              callback{|d| logger.info "Replication node added", set }.
+              errback{|e| logger.info "Error adding replication node", [set, e] }
           rescue
-            puts $!, $!.backtrace
+            logger.log_exception $!, s
           end
         end
       end

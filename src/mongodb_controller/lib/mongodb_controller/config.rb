@@ -28,7 +28,6 @@ class VCAP::MongodbController::Config < VCAP::Config
     @config[key]
   end
 
-  private
   class << self
     def from_file(file_name)
       self.new(super(file_name))
@@ -39,7 +38,6 @@ class VCAP::MongodbController::Config < VCAP::Config
     def configure(config, message_bus)
       @config = config
       @message_bus = message_bus
-      VCAP::MongodbController::MongoClusterBuilder.configure(config, message_bus)
     end
 
     def config_dir

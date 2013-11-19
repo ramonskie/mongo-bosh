@@ -7,7 +7,7 @@ describe VCAP::MongodbController::MongoClusterBuilder do
                                           pid_filename: "some file",
                                           master_node: params[:master],
                                           node_config_file: "etc/node_config.yml",
-                                          mongodb_config_file: "etc/mongo.conf"
+                                          mongod_config_file: "etc/mongo.conf"
                                         })
   end
   let(:message_bus) { double(:nats) }
