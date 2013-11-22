@@ -1,9 +1,11 @@
-require "steno"
-require "optparse"
-require "cf_message_bus/message_bus"
+require 'steno'
+require 'optparse'
+require 'cf_message_bus/message_bus'
 
-require_relative "message_bus_configurer"
-require_relative "mongo_cluster_builder"
+require_relative 'message_bus_configurer'
+require_relative 'mongo_cluster_builder'
+require_relative 'mongo_provisioner'
+require_relative 'updatable_config'
 
 module VCAP::MongodbController
   class Runner
@@ -11,7 +13,7 @@ module VCAP::MongodbController
       @argv = argv
 
       # default to production. this may be overriden during opts parsing
-      @config_file = File.expand_path("../../../config/mongodb_controller.yml", __FILE__)
+      @config_file = File.expand_path('../../../config/mongodb_controller.yml', __FILE__)
       parse_options!
       parse_config
 
@@ -19,12 +21,12 @@ module VCAP::MongodbController
     end
 
     def logger
-      @logger ||= Steno.logger("mc.runner")
+      @logger ||= Steno.logger('mc.runner')
     end
 
     def options_parser
       @parser ||= OptionParser.new do |opts|
-        opts.on("-c", "--config [ARG]", "Configuration File") do |opt|
+        opts.on('-c', '--config [ARG]', 'Configuration File') do |opt|
           @config_file = opt
         end
       end
@@ -66,12 +68,10 @@ module VCAP::MongodbController
     end
 
     def run!
+      EM.error_handler do |e|
+        logger.log_exception e
+      end
       EM.run do
-        config = @config
-        message_bus = MessageBusConfigurer::Configurer.new(uri: config[:message_bus_uri],
-                                                           logger: logger).go
-
-        VCAP::MongodbController::MongoClusterBuilder.configure(@config, message_bus)
         start_mongodb_controller
       end
     end
@@ -95,9 +95,18 @@ module VCAP::MongodbController
     private
 
     def start_mongodb_controller
-      create_pidfile
+      config = @config
+      message_bus = MessageBusConfigurer::Configurer.new(uris: config[:message_bus_uris],
+                                                         logger: Steno.logger('mc.bus')).go
+      driver = MongodbDriver.new(config)
 
-      VCAP::MongodbController::MongoClusterBuilder.run
+      @node_config = UpdatableConfig.new(@config[:node_config_file])
+      @cluster_builder = MongoClusterBuilder.new(@config, message_bus, @node_config, driver)
+      @provisioner = MongoProvisioner.new(@config, message_bus, @node_config, driver)
+
+      create_pidfile
+      @cluster_builder.run
+      @provisioner.run
     end
   end
 end

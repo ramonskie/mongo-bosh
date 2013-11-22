@@ -74,7 +74,7 @@ module FunctionalTestHelper
           s.close
           return true
         rescue
-          p "waiting connect to port #{port}..."
+          puts "waiting connect to port #{port}..."
           sleep 1
         end
       end
@@ -91,19 +91,23 @@ module FunctionalTestHelper
 
     def create_config
       conf = {
-        message_bus_uri: 'nats://user:password@127.0.0.1:4222',
+        message_bus_uris: ['nats://user:password@127.0.0.1:4222'],
         pid_filename: "/tmp/pid_#{port}",
         master_node: master?,
         node_config_file: node_config_file,
+        provision_config: provision_config_file,
         mongod_config_file: mongod_config_file,
         mongod_port: port,
         mongod_binary: mongod_path,
         mongod_data_dir: mongod_data_dir,
+        mongo_key_file: mongo_key_file,
         logging: {level: "debug"}
       }
       cleanup
       FileUtils.mkdir_p mongod_data_dir
       @tempfile.write(YAML.dump(conf))
+      File.open(mongo_key_file, "w") {|f| f.puts("HelloWorld")}
+      File.chmod(0600, mongo_key_file)
       @tempfile.close
     end
 
@@ -115,8 +119,16 @@ module FunctionalTestHelper
       "/tmp/mongo_#{port}.conf"
     end
 
+    def mongo_key_file
+      "/tmp/mongo_#{port}.key"
+    end
+
     def node_config_file
       "/tmp/node_#{port}.yml"
+    end
+
+    def provision_config_file
+      "/tmp/provision_#{port}.yml"
     end
 
     def port
@@ -139,6 +151,8 @@ module FunctionalTestHelper
       FileUtils.rm_rf mongod_data_dir rescue nil
       File.unlink mongod_config_file rescue nil
       File.unlink node_config_file rescue nil
+      File.unlink mongo_key_file rescue nil
+      File.unlink provision_config_file rescue nil
     end
 
     def unlink
