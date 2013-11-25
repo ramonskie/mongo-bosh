@@ -63,10 +63,6 @@ module VCAP::MongodbController
       Steno.init(Steno::Config.new(steno_config))
     end
 
-    def development?
-      @development ||= false
-    end
-
     def run!
       EM.error_handler do |e|
         logger.log_exception e
@@ -86,9 +82,7 @@ module VCAP::MongodbController
     end
 
     def stop!
-      registrar.shutdown do
-        EM.stop
-      end
+      EM.stop
     end
 
 
