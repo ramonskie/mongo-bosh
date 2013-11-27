@@ -1,0 +1,7 @@
+---
+name: mongodb_service_broker
+dependencies:
+- ruby
+files:
+- mongodb_service_broker/{Rakefile,Gemfile,Gemfile.lock}
+- mongodb_service_broker/{app,bin}/**/*

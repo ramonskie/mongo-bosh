@@ -17,7 +17,6 @@ describe VCAP::MongodbController::MongodbDriver do
       it 'should generate config for master' do
         mongo_config = <<END_CONFIG
 syslog = false
-pidfilepath=/tmp/mongo.pid
 dbpath=/tmp/mongo/data
 keyFile=/tmp/keyfile
 
@@ -41,7 +40,6 @@ END_CONFIG
       it 'should generate config for slave' do
         mongo_config = <<END_CONFIG
 syslog = false
-pidfilepath=/tmp/mongo.pid
 dbpath=/tmp/mongo/data
 keyFile=/tmp/keyfile
 

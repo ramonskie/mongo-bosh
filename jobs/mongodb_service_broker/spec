@@ -1,0 +1,23 @@
+---
+name: mongodb_service_broker
+templates:
+  mongodb_service_broker_ctl.erb: bin/mongodb_service_broker_ctl
+  mongodb_service_broker.yml.erb: etc/mongodb_service_broker.yml
+packages:
+  - common
+  - mongodb_service_broker
+  - ruby
+properties:
+  username:
+    description: "Username for service broker"
+  password:
+    description: "Password for service broker"
+
+  nats.user:
+    description: "Username for cc client to connect to NATS"
+  nats.password:
+    description: "Password for cc client to connect to NATS"
+  nats.address:
+    description: "IP address of Cloud Foundry NATS server"
+  nats.port:
+    description: "IP port of Cloud Foundry NATS server"

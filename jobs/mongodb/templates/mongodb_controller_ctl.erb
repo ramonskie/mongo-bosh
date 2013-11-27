@@ -11,6 +11,8 @@ CONF_DIR=$STORE_DIR/mongodb-conf
 RUN_DIR=/var/vcap/sys/run/mongodb
 LOG_DIR=/var/vcap/sys/log/mongodb
 
+KEY_FILE=$CONF_DIR/keyfile
+
 export PIDFILE=$RUN_DIR/mongodb_controller.pid
 export CONFIG_FILE=$JOB_DIR/etc/mongodb_controller.yml
 
@@ -34,9 +36,6 @@ case $1 in
       exit 1
     fi
 
-    echo $$ > $PIDFILE
-    chown vcap:vcap $PIDFILE
-
     if [ ! -d $LOG_DIR ]; then
       mkdir -p $LOG_DIR
       chown vcap:vcap $LOG_DIR
@@ -50,11 +49,13 @@ case $1 in
       mkdir -p $CONF_DIR
       chown vcap:vcap $CONF_DIR
     fi
+    echo "MongoSecret" >$KEY_FILE
+    chown vcap:vcap $KEY_FILE
 
     exec chpst -u vcap:vcap $PACKAGE_DIR/mongodb_controller/bin/mongodb_controller \
         -c $CONFIG_FILE \
-        >>$LOG_DIR/mongodb_controller_ng.stdout.log \
-        2>>$LOG_DIR/mongodb_controller_ng.stderr.log
+        >>$LOG_DIR/mongodb_controller.stdout.log \
+        2>>$LOG_DIR/mongodb_controller.stderr.log
     ;;
 
   stop)

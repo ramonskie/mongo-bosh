@@ -89,6 +89,8 @@ module VCAP::MongodbController
     private
 
     def start_mongodb_controller
+      create_pidfile
+
       config = @config
       message_bus = MessageBusConfigurer::Configurer.new(uris: config[:message_bus_uris],
                                                          logger: Steno.logger('mc.bus')).go
@@ -98,7 +100,6 @@ module VCAP::MongodbController
       @cluster_builder = MongoClusterBuilder.new(@config, message_bus, @node_config, driver)
       @provisioner = MongoProvisioner.new(@config, message_bus, @node_config, driver)
 
-      create_pidfile
       @cluster_builder.run
       @provisioner.run
     end

@@ -1,0 +1,5 @@
+check process mongodb_service_broker
+  with pidfile /var/vcap/sys/run/mongodb/mongodb_service_broker.pid
+  start program "/var/vcap/jobs/mongodb_service_broker/bin/mongodb_service_broker_ctl start"
+  stop program "/var/vcap/jobs/mongodb_service_broker/bin/mongodb_service_broker_ctl stop"
+  group vcap

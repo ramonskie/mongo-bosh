@@ -1,0 +1,4 @@
+set -e -x
+
+cd ${BUILD_DIR}/mongodb_service_broker
+bundle package --all

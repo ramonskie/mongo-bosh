@@ -66,7 +66,6 @@ module VCAP::MongodbController
     def generate_config(node_config)
       <<END_CONFIG
 syslog = #{not test_mode?}
-pidfilepath=#{@global_config[:pid_filename]}
 dbpath=#{@global_config[:mongod_data_dir]}
 keyFile=#{@global_config[:mongo_key_file]}
 

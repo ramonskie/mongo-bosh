@@ -1,4 +1,8 @@
 require 'optparse'
+require 'steno'
+require 'eventmachine'
+require 'cf_message_bus/message_bus'
+require 'thin'
 require_relative 'config'
 require_relative 'mongodb_broker'
 
