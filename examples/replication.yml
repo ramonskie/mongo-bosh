@@ -56,6 +56,7 @@ jobs:
   - name: core
     template:
       - nats
+      - mongodb_service_broker
     release: mongo-cluster
     instances: 1
     resource_pool: infrastructure
@@ -65,6 +66,9 @@ jobs:
       default:
       - dns
       - gateway
+    properties:
+      username: admin # Authentication properties for service broker
+      password: Password
 
   # This job is your MongoDB nodes
   - name: mongo
@@ -82,7 +86,7 @@ properties:
     address: 0.core.default.mongodb.microbosh
     port: 4222
     user: nats
-    password: <password for you message system>
+    password: Password #<your NATS Password>
     authorization_timeout: 5
   networks:
     apps: default
