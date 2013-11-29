@@ -1,0 +1,108 @@
+---
+name: mongodb
+director_uuid: <your directory uuid> #use bosh status for obtain it
+
+releases:
+ - name: mongo-cluster
+   version: latest
+
+# BOSH configuration
+compilation:
+  workers: 2
+  network: default
+  reuse_compilation_vms: true
+  cloud_properties:
+    instance_type: m1.small
+
+update:
+  canaries: 1
+  canary_watch_time: 30000-600000
+  update_watch_time: 30000-600000
+  max_in_flight: 4
+  max_errors: 1
+
+networks:
+- name: default
+  subnets:
+<% (0..28).each_with_index do |i| %>
+  - range: 10.244.0.<%= i*4 %>/30
+    reserved:
+      - 10.244.0.<%= i*4 + 1 %>
+    static:
+      - 10.244.0.<%= i*4 + 2 %>
+    cloud_properties:
+      name: random
+<% end %>
+<% (29..61).each_with_index do |i| %>
+  - range: 10.244.0.<%= i*4 %>/30
+    reserved:
+      - 10.244.0.<%= i*4 + 1 %>
+    cloud_properties:
+      name: random
+<% end %>
+<% (62..63).each_with_index do |i| %>
+  - range: 10.244.0.<%= i*4 %>/30
+    reserved:
+      - 10.244.0.<%= i*4 + 1 %>
+    static:
+      - 10.244.0.<%= i*4 + 2 %>
+    cloud_properties:
+      name: random
+<% end %>
+# Pull for your databases and infrastructure nodes
+resource_pools:
+- name: infrastructure
+  network: default
+  size: 1
+  stemcell:
+    name: bosh-stemcell
+    version: latest
+  cloud_properties:
+    instance_type: m1.small
+- name: mongodb
+  network: default
+  size: 3
+  stemcell:
+    name: bosh-stemcell
+    version: latest
+  cloud_properties:
+    instance_type: m1.medium
+
+jobs:
+  # Some infrastructure jobs
+  - name: core
+    template:
+      - nats
+      - mongodb_service_broker
+    release: mongo-cluster
+    instances: 1
+    resource_pool: infrastructure
+    persistent_disk: 8192
+    networks:
+    - name: default
+      static_ips:
+      - 10.244.0.2
+    properties:
+      username: admin
+      password: Password
+
+  # This job is your MongoDB nodes
+  - name: mongo
+    release: mongo-cluster
+    template: mongodb
+    instances: 3
+    resource_pool: mongodb
+    persistent_disk: 65536 # Disk size for database (in megabytes)
+    networks:
+    - name: default
+      default: [dns, gateway]
+
+properties:
+  nats:
+    address: 10.244.0.2
+    port: 4222
+    user: nats
+    password: Password
+    authorization_timeout: 5
+  networks:
+    apps: default
