@@ -1,7 +1,12 @@
+ENV["RACK_ENV"] = "test"
+
+require 'sinatra'
+require 'rspec/http'
 require 'eventmachine'
-require "sinatra/async/test"
+require 'steno'
 
 require File.expand_path '../../../app/mongodb_broker.rb', __FILE__
+require "sinatra/async/test"
 
 module RSpecMixin
   include Sinatra::Async::Test::Methods

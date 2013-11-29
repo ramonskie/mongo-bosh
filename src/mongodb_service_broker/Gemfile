@@ -8,7 +8,7 @@ gem 'vcap_common', git: 'https://github.com/cloudfoundry/vcap-common.git'
 gem 'steno'
 
 gem 'sinatra'
-gem 'async_sinatra', github: "raggi/async_sinatra"
+gem 'async_sinatra'
 
 group :test do
   gem 'simplecov'

@@ -4,12 +4,13 @@ require 'json'
 
 class MongodbBroker < Sinatra::Base
   ADVERTIZE_CHANNEL = "mongodb.advertise".freeze
+  register Sinatra::Async
 
   use Rack::Auth::Basic do |username, password|
-    username == settings.config[:username] && password == settings.config[:password]
+    username == settings.config[:login] && password == settings.config[:password]
   end
+  enable :logging
 
-  register Sinatra::Async
 
   def self.configure(config, message_bus)
     set :config, config
@@ -122,14 +123,16 @@ class MongodbBroker < Sinatra::Base
 
   def mongodb_service
     {
-      id: 1,
+      id: "1",
       name: 'MongoDB Cluster',
       description: 'Clustered MongoDB service',
+      bindable: true,
       plans: [{
-                id: 1,
+                id: "1",
                 name: "full",
                 description: "Access to whole database"
               }]
     }
   end
 end
+

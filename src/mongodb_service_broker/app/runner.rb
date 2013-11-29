@@ -26,6 +26,10 @@ module MongodbSeviceBroker
       end
     end
 
+    def logger
+      @logger ||= Steno.logger('msb.runner')
+    end
+
     def parse_options!
       options_parser.parse! @argv
     rescue
@@ -56,15 +60,23 @@ module MongodbSeviceBroker
       EM.run do
         start_app
       end
+      traps.each(&:call)
     end
 
     def trap_signals
       %w(TERM INT QUIT).each do |signal|
         trap(signal) do
-          logger.warn("Caught signal #{signal}")
+          add_trap do
+            logger.warn("Caught signal #{signal}")
+          end
           stop!
         end
       end
+    end
+
+    def stop!
+      @thin_server.stop!
+      EM.stop
     end
 
     def create_pidfile
@@ -80,11 +92,19 @@ module MongodbSeviceBroker
       @message_bus = CfMessageBus::MessageBus.new(uris: @config[:message_bus_uris],
                                                   logger: Steno.logger('mc.bus'))
       MongodbBroker.configure(@config, @message_bus)
-      @thin_server = Thin::Server.new(@config[:bind_address], @config[:port])
+      @thin_server = Thin::Server.new(@config[:bind_address], @config[:port], signals: false)
       @thin_server.app = MongodbBroker
       @thin_server.timeout = 10
       @thin_server.threaded = true
       @thin_server.start!
+    end
+
+    def traps
+      @traps ||= []
+    end
+
+    def add_trap(&block)
+      traps << block
     end
   end
 end

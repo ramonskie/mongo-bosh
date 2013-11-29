@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe MongodbBroker do
   subject { last_response }
-  let(:config) { {username: "user", password: "password"} }
+  let(:config) { {login: "user", password: "password"} }
   let(:message_bus) { double(:message_bus) }
   before { described_class.configure(config, message_bus) }
 
@@ -12,7 +12,7 @@ describe MongodbBroker do
       before { get '/v2/catalog' }
 
       it { should be_http_ok }
-      it { expect(subject.body).to eq '{"services":[{"id":1,"name":"MongoDB Cluster","description":"Clustered MongoDB service","plans":[{"id":1,"name":"full","description":"Access to whole database"}]}]}' }
+      it { expect(subject.body).to eq '{"services":[{"id":"1","name":"MongoDB Cluster","description":"Clustered MongoDB service","bindable":true,"plans":[{"id":"1","name":"full","description":"Access to whole database"}]}]}' }
     end
 
     context "unauthorized" do
