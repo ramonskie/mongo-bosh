@@ -1,9 +1,14 @@
 ---
 message_bus_uris:
-  - nats://<%= p("nats.user") %>:<%= p("nats.password") %>@<%= p("nats.address") %>:<%= p("nats.port") %>
+<% p("nats.machines").each do |ip| %>
+  - nats://<%= p("nats.user") %>:<%= p("nats.password") %>@<%= ip %>:<%= p("nats.port") %>
+<% end %>
 pid_filename: /var/vcap/sys/run/mongodb/mongodb_service_broker.pid
 
-bind_address: 0.0.0.0
+bind_address: <%= spec.networks.send(properties.networks.apps).ip %>
 port: 7080
-login: <%= p('username') %>
-password:  <%= p('password') %>
+login: <%= p('mongodb.broker.username') %>
+password:  <%= p('mongodb.broker.password') %>
+
+external_domain: <%= p('mongodb.broker.host') %>
+index: <%= spec.index %>

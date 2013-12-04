@@ -1,6 +1,7 @@
 require 'optparse'
 require 'steno'
 require 'eventmachine'
+require "cf/registrar"
 require 'cf_message_bus/message_bus'
 require 'thin'
 require_relative 'config'
@@ -97,6 +98,19 @@ module MongodbSeviceBroker
       @thin_server.timeout = 10
       @thin_server.threaded = true
       @thin_server.start!
+
+      registrar.register_with_router
+    end
+
+    def registrar
+      @registrar ||= Cf::Registrar.new(
+          :message_bus_servers => @config[:message_bus_uris],
+          :host => @config[:bind_address],
+          :port => @config[:port],
+          :uri => @config[:external_domain],
+          :tags => {:component => "MongoDB Service Broker"},
+          :index => @config[:index]
+      )
     end
 
     def traps

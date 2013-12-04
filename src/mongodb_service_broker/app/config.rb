@@ -11,6 +11,8 @@ module MongodbSeviceBroker
         port:               Integer, # Port for bind webserver
         login:              String,  # Login for service brocker
         password:           String,  # Password for service brocker
+        optional(:index) => Integer, # Component index (cc-0, cc-1, etc)
+        external_domain:    String,  # App external domain
       }
     end
 

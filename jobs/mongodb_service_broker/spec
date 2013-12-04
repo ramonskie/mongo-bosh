@@ -8,16 +8,21 @@ packages:
   - mongodb_service_broker
   - ruby
 properties:
-  username:
+  mongodb.broker.username:
     description: "Username for service broker"
-  password:
+  mongodb.broker.password:
     description: "Password for service broker"
+  mongodb.broker.host:
+    description: "Host to bind (using router)"
 
   nats.user:
     description: "Username for cc client to connect to NATS"
   nats.password:
     description: "Password for cc client to connect to NATS"
-  nats.address:
-    description: "IP address of Cloud Foundry NATS server"
+  nats.machines:
+    description: "Addresses of Cloud Foundry NATS server"
   nats.port:
     description: "IP port of Cloud Foundry NATS server"
+
+  networks.apps:
+    description: "Application networks"

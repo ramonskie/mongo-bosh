@@ -83,10 +83,16 @@ jobs:
 
 properties:
   nats:
-    address: 0.core.default.mongodb.microbosh
+    machines:
+      - 0.core.default.mongodb.microbosh
     port: 4222
     user: nats
     password: Password #<your NATS Password>
     authorization_timeout: 5
   networks:
     apps: default
+  mongodb:
+    broker:
+      username: admin
+      password: Password
+      host: # Host to bind service broker
