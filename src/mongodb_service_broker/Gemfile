@@ -17,4 +17,5 @@ group :test do
   gem 'guard-bundler'
   gem 'rack-test'
   gem 'rspec-http', '~> 0.9'
+  gem 'json_spec'
 end

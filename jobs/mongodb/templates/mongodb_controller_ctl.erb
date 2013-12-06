@@ -51,6 +51,7 @@ case $1 in
     fi
     echo "MongoSecret" >$KEY_FILE
     chown vcap:vcap $KEY_FILE
+    chmod 0600 $KEY_FILE
 
     exec chpst -u vcap:vcap $PACKAGE_DIR/mongodb_controller/bin/mongodb_controller \
         -c $CONFIG_FILE \

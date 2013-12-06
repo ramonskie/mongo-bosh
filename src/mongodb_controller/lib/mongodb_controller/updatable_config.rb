@@ -33,6 +33,11 @@ class UpdatableConfig
     end
   end
 
+  def notify_observers!
+    changed
+    notify_observers @data
+  end
+
   def [](key)
     @data[key]
   end

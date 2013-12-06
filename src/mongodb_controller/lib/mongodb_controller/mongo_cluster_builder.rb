@@ -90,8 +90,8 @@ module VCAP::MongodbController
         replication_set.callback do |s|
           logger.info "Applying master config", s
           init_replication("#{local_ip}:#{@config[:mongod_port]}").
-                           callback{ r.succeed }.
-                           errback{|e| r.errback(e) }
+                           callback{ logger.error("Replication initialized");r.succeed }.
+                           errback{|e| logger.error("Error initialize replication", e); r.failed(e) }
         end
       else
         r.succeed

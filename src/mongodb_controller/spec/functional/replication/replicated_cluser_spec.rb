@@ -25,7 +25,7 @@ describe 'Replicated two node cluster' do
     process1.wait_startup(config1.port)
     process2.start
     process1.wait_startup(config2.port)
-    wait_timeout('MongoDB replication configured', 20.seconds) do
+    wait_timeout('MongoDB replication configured', 60.seconds) do
       repl_set =  mongo_client['local']['system.replset'].find_one
       repl_set && repl_set['members'].length == 2
     end

@@ -75,7 +75,7 @@ END_CONFIG
   describe '#started' do
     it 'configures mongo' do
       con = double(:connection)
-      expect(EM::Mongo::Connection).to receive(:new).with('127.0.0.1', 27017, 3, reconnect_in: 3).
+      expect(EM::Mongo::Connection).to receive(:new).with('127.0.0.1', 27017, 20, reconnect_in: 30).
         and_return(con)
       expect(con).to receive(:callback)
       subject.started

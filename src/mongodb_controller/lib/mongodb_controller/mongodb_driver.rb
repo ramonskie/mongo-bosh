@@ -32,7 +32,7 @@ module VCAP::MongodbController
     def started
       @state = :started
       @connection = EM::Mongo::Connection.new("127.0.0.1", @global_config[:mongod_port],
-                                              3, reconnect_in: 3)
+                                              20, reconnect_in: 30)
       @connection.callback { process_commands }
     rescue
       logger.log_exception $!
@@ -54,7 +54,7 @@ module VCAP::MongodbController
         command = @commands.shift
         command.call.
           callback { process_commands }.
-          errback { process_commands }
+          errback {|e| logger.error(e, e); process_commands }
       else
         EM.add_timer(1) { process_commands }
       end

@@ -41,8 +41,8 @@ module VCAP::MongodbController
     end
 
     def process_provision_message(msg, reply)
+      logger.info "Processing message", msg
       r = MongoCommand.new
-
       case msg["command"]
       when "provision" then provision(r, msg["data"])
       when "unprovision" then unprovision(r, msg["data"])
@@ -57,6 +57,9 @@ module VCAP::MongodbController
         logger.warn(e[:message], e)
         message_bus.publish(reply, {error: true, data: e})
       end
+    rescue e
+      logger.warn(e[:message], e)
+      message_bus.publish(reply, {error: true, data: e})
     end
 
     # Provision database for controller
@@ -98,11 +101,13 @@ module VCAP::MongodbController
       end
 
       credentials = build_credentials(instance[:database], config[:user], config[:password])
+
       driver.connection.db(instance[:database]).collection("system.users").
         safe_insert(user: config[:user],
                     pwd: to_mongo_password(config[:user], config[:password]),
                     roles: %w(readWrite dbAdmin)).
-        callback { r.succeed(credentials: credentials) }
+        callback { r.succeed(credentials: credentials) }.
+        errback {|e| r.error(e)}
     end
 
     def unbind(r, data)
@@ -138,13 +143,14 @@ module VCAP::MongodbController
 
       driver.connection.db(instance[:database]).command(dropDatabase: 1).
         callback{ r.succeed({}) }.
-        errback{|e| p e; r.fail({})}
+        errback{|e| r.fail({})}
     end
 
     def build_credentials(database, user, password)
       hosts = nodes.join(',')
       {
-        uri: "mongodb://#{user}:#{password}@#{hosts}/#{database}",
+        # We use mongo_uri, because uri breaks staging
+        mongo_uri: "mongodb://#{user}:#{password}@#{hosts}/#{database}",
         username: user,
         password: password,
         hosts: nodes,

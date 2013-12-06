@@ -99,6 +99,7 @@ module VCAP::MongodbController
       @node_config = UpdatableConfig.new(@config[:node_config_file])
       @cluster_builder = MongoClusterBuilder.new(@config, message_bus, @node_config, driver)
       @provisioner = MongoProvisioner.new(@config, message_bus, @node_config, driver)
+      @node_config.notify_observers!
 
       @cluster_builder.run
       @provisioner.run

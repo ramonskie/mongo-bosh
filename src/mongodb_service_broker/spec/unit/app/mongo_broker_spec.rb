@@ -12,7 +12,23 @@ describe MongodbBroker do
       before { get '/v2/catalog' }
 
       it { should be_http_ok }
-      it { expect(subject.body).to eq '{"services":[{"id":"1","name":"MongoDB Cluster","description":"Clustered MongoDB service","bindable":true,"plans":[{"id":"1","name":"full","description":"Access to whole database"}]}]}' }
+      it do
+        expect(subject.body).to be_json_eql <<JSON
+{
+    "services": [{
+        "id": "1",
+        "name": "MongoDB Cluster",
+        "description": "Clustered MongoDB service",
+        "bindable": true,
+        "plans": [{
+            "id": "1",
+            "name": "full",
+            "description": "Access to whole database"
+        }]
+    }]
+}
+JSON
+      end
     end
 
     context "unauthorized" do
@@ -30,7 +46,7 @@ describe MongodbBroker do
 
       context "success" do
         before do
-          expect(message_bus).to receive(:request).with('mongodb.advertise', command: "provision",
+          expect(message_bus).to receive(:request).with('mongodb.provision', command: "provision",
                                                         data: data).
             and_yield("error" => false, "data" => {"database" => "d1"})
           put '/v2/service_instances/abc', { service_id: 1, plan_id: 1,
@@ -44,7 +60,7 @@ describe MongodbBroker do
 
       context "error" do
         before do
-          expect(message_bus).to receive(:request).with('mongodb.advertise', command: "provision",
+          expect(message_bus).to receive(:request).with('mongodb.provision', command: "provision",
                                                         data: data).
             and_yield("error" => true, "message" => "Exists", "type" => "database_already_exists")
           put '/v2/service_instances/abc', { service_id: 1, plan_id: 1,
@@ -72,7 +88,7 @@ describe MongodbBroker do
         before do
           credentials = { "uri" => "mongodb://a:b@c/d", "username" => "a",
             "password" => "p", "hosts" => "c", "database" => "d"}
-          expect(message_bus).to receive(:request).with('mongodb.advertise', command: "bind",
+          expect(message_bus).to receive(:request).with('mongodb.provision', command: "bind",
                                                         data: data).
             and_yield("error" => false, "data" => {"credentials" => credentials})
           put '/v2/service_instances/abc/service_bindings/def', { service_id: 1, plan_id: 1}
@@ -80,12 +96,24 @@ describe MongodbBroker do
         end
 
         it { should be_http_created }
-        it { expect(subject.body).to eq '{"credentials":{"uri":"mongodb://a:b@c/d","username":"a","password":"p","hosts":"c","database":"d"}}'}
+        it do
+          expect(subject.body).to be_json_eql <<JSON
+{
+    "credentials": {
+        "uri": "mongodb://a:b@c/d",
+        "username": "a",
+        "password": "p",
+        "hosts": "c",
+        "database": "d"
+    }
+}
+JSON
+          end
       end
 
       context "already binded" do
         before do
-          expect(message_bus).to receive(:request).with('mongodb.advertise', command: "bind",
+          expect(message_bus).to receive(:request).with('mongodb.provision', command: "bind",
                                                         data: data).
             and_yield("error" => true, "message" => "Exists", "type" => "already_binded")
           put '/v2/service_instances/abc/service_bindings/def', { service_id: 1, plan_id: 1}
@@ -97,7 +125,7 @@ describe MongodbBroker do
 
       context "not found" do
         before do
-          expect(message_bus).to receive(:request).with('mongodb.advertise', command: "bind",
+          expect(message_bus).to receive(:request).with('mongodb.provision', command: "bind",
                                                         data: data).
             and_yield("error" => true, "message" => "Exists", "type" => "no_database_found")
           put '/v2/service_instances/abc/service_bindings/def', { service_id: 1, plan_id: 1}
@@ -122,7 +150,7 @@ describe MongodbBroker do
 
       context "success" do
         before do
-          expect(message_bus).to receive(:request).with('mongodb.advertise', command: "unbind",
+          expect(message_bus).to receive(:request).with('mongodb.provision', command: "unbind",
                                                         data: data).
             and_yield("error" => false, "data" => {})
           delete '/v2/service_instances/abc/service_bindings/def', { service_id: 1, plan_id: 1}
@@ -130,12 +158,12 @@ describe MongodbBroker do
         end
 
         it { should be_http_ok }
-        it { expect(subject.body).to eq '' }
+        it { expect(subject.body).to eq '{}' }
       end
 
       context "no database" do
         before do
-          expect(message_bus).to receive(:request).with('mongodb.advertise', command: "unbind",
+          expect(message_bus).to receive(:request).with('mongodb.provision', command: "unbind",
                                                         data: data).
             and_yield("error" => true, "message" => "No database", "type" => "no_database_found")
           delete '/v2/service_instances/abc/service_bindings/def', { service_id: 1, plan_id: 1}
@@ -147,7 +175,7 @@ describe MongodbBroker do
 
       context "not binded" do
         before do
-          expect(message_bus).to receive(:request).with('mongodb.advertise', command: "unbind",
+          expect(message_bus).to receive(:request).with('mongodb.provision', command: "unbind",
                                                         data: data).
             and_yield("error" => true, "message" => "Exists", "type" => "not_binded")
           delete '/v2/service_instances/abc/service_bindings/def', { service_id: 1, plan_id: 1}
@@ -172,7 +200,7 @@ describe MongodbBroker do
 
       context "success" do
         before do
-          expect(message_bus).to receive(:request).with('mongodb.advertise', command: "unprovision",
+          expect(message_bus).to receive(:request).with('mongodb.provision', command: "unprovision",
                                                         data: data).
             and_yield("error" => false, "data" => {})
           delete '/v2/service_instances/abc', { service_id: 1, plan_id: 1}
@@ -180,12 +208,12 @@ describe MongodbBroker do
         end
 
         it { should be_http_ok }
-        it { expect(subject.body).to eq '' }
+        it { expect(subject.body).to eq '{}' }
       end
 
       context "no database" do
         before do
-          expect(message_bus).to receive(:request).with('mongodb.advertise', command: "unprovision",
+          expect(message_bus).to receive(:request).with('mongodb.provision', command: "unprovision",
                                                         data: data).
             and_yield("error" => true, "message" => "No database", "type" => "no_database_found")
           delete '/v2/service_instances/abc', { service_id: 1, plan_id: 1}

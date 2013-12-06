@@ -3,7 +3,7 @@ require 'sinatra/async'
 require 'json'
 
 class MongodbBroker < Sinatra::Base
-  ADVERTIZE_CHANNEL = "mongodb.advertise".freeze
+  PROVISION_CHANNEL = "mongodb.provision".freeze
   register Sinatra::Async
 
   use Rack::Auth::Basic do |username, password|
@@ -39,14 +39,15 @@ class MongodbBroker < Sinatra::Base
       organization_guid: params[:organization_guid],
       space_guid: params[:space_guid]
     }
-    message_bus.request(ADVERTIZE_CHANNEL, command: "provision", data: req) do |resp|
+    message_bus.request(PROVISION_CHANNEL, command: "provision", data: req) do |resp|
+      data = resp["data"]
       content_type :json
       if resp["error"]
-        case resp["type"]
+        case data["type"]
         when "database_already_exists" then status 409
         else status 500
         end
-        body resp["message"].to_json
+        body data["message"].to_json
       else
         status 201
         body JSON.dump({})
@@ -61,18 +62,19 @@ class MongodbBroker < Sinatra::Base
       service_id: params[:service_id],
       plan_id: params[:plan_id],
     }
-    message_bus.request(ADVERTIZE_CHANNEL, command: "bind", data: req) do |resp|
+    message_bus.request(PROVISION_CHANNEL, command: "bind", data: req) do |resp|
       content_type :json
+      data = resp["data"]
       if resp["error"]
-        case resp["type"]
+        case data["type"]
         when "already_binded" then status 409
         when "no_database_found" then status 404
         else status 500
         end
-        body resp["message"].to_json
+        body data["message"].to_json
       else
         status 201
-        body JSON.dump(resp["data"])
+        body JSON.dump(data)
       end
     end
   end
@@ -84,18 +86,19 @@ class MongodbBroker < Sinatra::Base
       service_id: params[:service_id],
       plan_id: params[:plan_id],
     }
-    message_bus.request(ADVERTIZE_CHANNEL, command: "unbind", data: req) do |resp|
+    message_bus.request(PROVISION_CHANNEL, command: "unbind", data: req) do |resp|
       content_type :json
+      data = resp["data"]
       if resp["error"]
-        case resp["type"]
-        when "not_binded" then status 404
-        when "no_database_found" then status 404
+        case data["type"]
+        when "not_binded" then status 410
+        when "no_database_found" then status 410
         else status 500
         end
-        body resp["message"].to_json
+        body "{}"
       else
         status 200
-        body ""
+        body "{}"
       end
     end
   end
@@ -106,17 +109,19 @@ class MongodbBroker < Sinatra::Base
       service_id: params[:service_id],
       plan_id: params[:plan_id],
     }
-    message_bus.request(ADVERTIZE_CHANNEL, command: "unprovision", data: req) do |resp|
+    message_bus.request(PROVISION_CHANNEL, command: "unprovision", data: req) do |resp|
+      data = resp["data"]
       content_type :json
+
       if resp["error"]
-        case resp["type"]
-        when "no_database_found" then status 404
+        case data["type"]
+        when "no_database_found" then status 410
         else status 500
         end
-        body resp["message"].to_json
+        body "{}"
       else
         status 200
-        body ""
+        body "{}"
       end
     end
   end
@@ -124,7 +129,7 @@ class MongodbBroker < Sinatra::Base
   def mongodb_service
     {
       id: "1",
-      name: 'MongoDB Cluster',
+      name: 'mongodb',
       description: 'Clustered MongoDB service',
       bindable: true,
       plans: [{
