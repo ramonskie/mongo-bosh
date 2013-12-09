@@ -99,10 +99,16 @@ jobs:
 
 properties:
   nats:
-    address: 10.244.0.2
+    machines:
+      - 10.244.0.2
     port: 4222
     user: nats
     password: Password
     authorization_timeout: 5
   networks:
     apps: default
+  mongodb:
+    broker:
+      username: admin
+      password: Password
+      host: # Host to bind service broker
