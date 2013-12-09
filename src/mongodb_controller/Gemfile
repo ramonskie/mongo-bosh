@@ -14,7 +14,7 @@ gem 'vcap_common', git: 'https://github.com/cloudfoundry/vcap-common.git'
 gem 'rspec'
 gem 'ci_reporter'
 gem 'bson_ext'
-gem 'em-mongo'
+gem 'em-mongo', github: "borovsky/em-mongo"
 
 group :development do
   gem 'debugger'

@@ -9,6 +9,8 @@ describe 'Replicated two node cluster' do
   let(:mongo_client) { ::Mongo::MongoClient.new('127.0.0.1', config1.port) }
   let(:message_bus) { ::CfMessageBus::MessageBus.new(uri: 'nats://user:password@127.0.0.1:4222',
                                                      logger: Logger.new(STDOUT)) }
+  include_examples "functional test"
+
   around do |s|
     error = nil
     EM.error_handler do |e|
@@ -25,7 +27,7 @@ describe 'Replicated two node cluster' do
     process1.wait_startup(config1.port)
     process2.start
     process1.wait_startup(config2.port)
-    wait_timeout('MongoDB replication configured', 60.seconds) do
+    wait_timeout('MongoDB repli0cation configured', 60.seconds) do
       repl_set =  mongo_client['local']['system.replset'].find_one
       repl_set && repl_set['members'].length == 2
     end
@@ -72,7 +74,7 @@ describe 'Replicated two node cluster' do
   end
 
   def check_bind_credentials(instance_id, id, credentials)
-    uri = credentials["uri"]
+    uri = credentials["mongo_uri"]
     r = %r{^mongodb://(?<user>.+):(?<password>.+)@(?<hosts>[^/]+)/(?<path>.+)$}
     m = r.match uri
     expect(m[:user]).to eq credentials["username"]

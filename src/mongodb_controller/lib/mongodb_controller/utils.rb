@@ -11,15 +11,6 @@ module VCAP::MongodbController
     end
   end
 end
-
-module EM::Mongo
-  class Connection
-    def callback(&block)
-      @em_connection.callback(&block)
-    end
-  end
-end
-
 module VCAP::MongodbController
   class MongoCommand
     include EM::Deferrable

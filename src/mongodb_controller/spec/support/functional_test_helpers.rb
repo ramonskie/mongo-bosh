@@ -162,5 +162,16 @@ module FunctionalTestHelper
   end
 end
 
+shared_examples "functional test" do
+  around do |e|
+    @nats_pid = Process.spawn('nats-server')
+    begin
+      e.run
+    ensure
+      Process.kill(9, @nats_pid)
+    end
+  end
+end
+
 RSpec.configure { |c| c.include FunctionalTestHelper }
 ENV["TEST_MODE"] = "true"

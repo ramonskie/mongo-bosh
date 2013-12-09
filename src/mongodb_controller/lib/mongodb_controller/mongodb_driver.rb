@@ -32,7 +32,7 @@ module VCAP::MongodbController
     def started
       @state = :started
       @connection = EM::Mongo::Connection.new("127.0.0.1", @global_config[:mongod_port],
-                                              20, reconnect_in: 30)
+                                              20, reconnect_in: 30, max_retries: 20)
       @connection.callback { process_commands }
     rescue
       logger.log_exception $!
