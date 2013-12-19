@@ -18,7 +18,7 @@ Using this release you can create MongoDB cluster in no time
 ## What are the use cases?
 
 - Creating replicated cluster
-- Adding production cluster service for CloudFoundry (TBD)
+- Adding production cluster service for CloudFoundry
 - Created production sharded cluster (TBD)
 
 ## How to use it
@@ -42,8 +42,7 @@ small part of CloudFoundry (message bus).
 
 ## Roadmap
 
-- Integration with CloudFoundry (adding service)
-- Creating service for CloudFoundry
+- Sharded deployment
 - Reshaping cluster
 
 ## Collaborate
