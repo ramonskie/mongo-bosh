@@ -1,0 +1,4 @@
+set -e -x
+
+cd ${BUILD_DIR}/nats
+bundle package --all
