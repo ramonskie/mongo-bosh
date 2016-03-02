@@ -15,9 +15,11 @@ gem 'rspec'
 gem 'ci_reporter'
 gem 'bson_ext'
 gem 'em-mongo', github: "borovsky/em-mongo"
+gem 'mime-types', '~> 2.99', '>= 2.99.1'
+gem 'cf-registrar', '~> 1.0', '>= 1.0.3'
 
 group :development do
-  gem 'debugger'
+  gem 'debugger2'
   gem 'pry'
 end
 

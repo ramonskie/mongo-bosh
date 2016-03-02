@@ -16,3 +16,5 @@ blobs
 .cache
 Gemfile.lock
 tmp
+releases/**/*.tgz
+.DS_Store

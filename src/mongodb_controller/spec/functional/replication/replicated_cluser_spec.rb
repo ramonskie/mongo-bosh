@@ -74,7 +74,7 @@ describe 'Replicated two node cluster' do
   end
 
   def check_bind_credentials(instance_id, id, credentials)
-    uri = credentials["mongo_uri"]
+    uri = credentials["url"]
     r = %r{^mongodb://(?<user>.+):(?<password>.+)@(?<hosts>[^/]+)/(?<path>.+)$}
     m = r.match uri
     expect(m[:user]).to eq credentials["username"]

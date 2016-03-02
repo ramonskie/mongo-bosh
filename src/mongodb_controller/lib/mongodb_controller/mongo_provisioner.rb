@@ -150,7 +150,7 @@ module VCAP::MongodbController
       hosts = nodes.join(',')
       {
         # We use mongo_uri, because uri breaks staging
-        mongo_uri: "mongodb://#{user}:#{password}@#{hosts}/#{database}",
+        url: "mongodb://#{user}:#{password}@#{hosts}/#{database}",
         username: user,
         password: password,
         hosts: nodes,
